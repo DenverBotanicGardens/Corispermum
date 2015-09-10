@@ -1,0 +1,86 @@
+---
+title: "Corispermum spp"
+author: "Michelle DePrenger-Levin"
+date: "Wednesday, September 09, 2015"
+output: pdf_document
+---
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+cori <- read.csv(path.expand("Q:/Research/All_Projects_by_Species/Corispermum_navicula/2015.data.update/corispermum.fruit.measurements.all.csv"))
+head(cori)
+```
+
+Individual plants with multiple fruits measured and kept in these
+Fruit length to width ratio
+
+```{r, echo=FALSE}
+cori$ratio <- cori$all.length..mm./cori$all.width..mm.
+ggplot(cori, aes(species.id,ratio)) +
+  geom_boxplot()
+
+ggplot(cori, aes(all.length..mm.,ratio)) +
+  stat_smooth(method = "lm") +
+  geom_point() +
+  facet_wrap(~species.id) +
+  ggtitle("Ratio by length by species id")
+
+ggplot(cori, aes(all.length..mm.,ratio)) +
+  stat_smooth(method = "lm") +
+  geom_point() +
+  facet_wrap(~coll.site) +
+  ggtitle("Ratio by length by collection site")
+
+ggplot(cori, aes(all.length..mm.,ratio)) +
+  stat_smooth(method = "lm") +
+  geom_point() +
+  facet_wrap(~tech) +
+  ggtitle("Ratio by length by tech")
+```
+
+Distribution of data
+
+```{r}
+ggplot(cori) +
+  geom_histogram(aes(x = all.length..mm., y=(..count..)/sum(..count..)), 
+              color = "black", fill =NA ,binwidth=.1,position="dodge")+
+  geom_histogram(aes(x = all.width..mm., y=(..count..)/sum(..count..)), 
+              alpha=0.3,, fill ="green",binwidth=.1,position="dodge") +
+  geom_histogram(aes(x = ratio, y=(..count..)/sum(..count..)), 
+              color = "white", alpha=0.3,, fill ="black",binwidth=.1,position="dodge") +
+  theme_bw()
+```
+
+Wing is right skewed when taken all together. Not if by species.
+
+```{r}
+ggplot(cori) +
+    geom_histogram(aes(x = all.wing..mm., y=(..count..)/sum(..count..)), 
+                       alpha=0.3,, fill ="blue",binwidth=.02,position="dodge")
+
+ggplot(cori) +
+    geom_histogram(aes(x = all.wing..mm., y=(..count..)/sum(..count..)), 
+                       alpha=0.3,, fill ="blue",binwidth=.02,position="dodge") +
+    facet_wrap(~species.id + tech)
+
+ggplot(cori) +
+    geom_histogram(aes(x = all.wing..mm., y=(..count..)/sum(..count..)), 
+                       alpha=0.3,, fill ="blue",binwidth=.02,position="dodge") +
+    facet_wrap(~species.id)
+```
+
+Keep only the maximum measurements per individual
+```{r}
+cori_max <- 
+  
+  with(cori, tapply(ratio, c(all.individual,all.populations), max))
+
+```
+
+
+
+Keep only the average measurement per individual
